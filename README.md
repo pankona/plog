@@ -17,4 +17,14 @@ Deadly simple logger library for Go
 `plog.SetOutput(w io.Writer)` function is for control output of logging.
 `io.Stdout` is default.
 
+## LICENSE
+
+MIT
+
+## Author
+
+Yosuke Akatsuka (@pankona)
+* [Twitter](https://twitter.com/pankona)
+* [GitHub](https://github.com/pankona)
+* [Qiita](https://qiita.com/pankona)
 

@@ -14,8 +14,7 @@ Deadly simple logger library for Go
 * Error
   * Call `plog.Errorf` function to log message as error
 
-`plog.SetOutput(w io.Writer)` function is for control output of logging.
-`io.Stdout` is default.
+`plog.SetPrinter(p Printer)` function is for control output format/destination of logging.
 
 ## LICENSE
 

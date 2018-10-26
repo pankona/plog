@@ -41,12 +41,13 @@ func SetPrinter(p Printer) {
 	l.Printer = p
 }
 
+//go:generate stringer -type LogLevel -linecomment
 type LogLevel int
 
 const (
-	LogLevelInfo LogLevel = iota
-	LogLevelDebug
-	LogLevelError
+	LogLevelInfo  LogLevel = iota // INFO
+	LogLevelDebug                 // DEBUG
+	LogLevelError                 // ERROR
 )
 
 type Printer interface {

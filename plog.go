@@ -42,15 +42,22 @@ func SetPrinter(p Printer) {
 	l.Printer = p
 }
 
+// LogLevel represents log level
 //go:generate stringer -type LogLevel -linecomment
 type LogLevel int
 
 const (
-	LogLevelInfo  LogLevel = iota // INFO
-	LogLevelDebug                 // DEBUG
-	LogLevelError                 // ERROR
+	// LogLevelInfo is log level for info
+	LogLevelInfo LogLevel = iota // INFO
+	// LogLevelDebug is log level for debug
+	// Only when debug is enabled via SetDebug function,
+	// this level's log will be output
+	LogLevelDebug // DEBUG
+	// LogLevelError is log level for error
+	LogLevelError // ERROR
 )
 
+// Printer is an interface to customize logging format
 type Printer interface {
 	Printf(w io.Writer, level LogLevel, f string, args ...interface{})
 }

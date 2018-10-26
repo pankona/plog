@@ -39,7 +39,7 @@ func Errorf(f string, args ...interface{}) {
 
 // SetPrinter sets a Printer implementation
 func SetPrinter(p Printer) {
-	l.Printer = p
+	l.printer = p
 }
 
 // LogLevel represents log level
@@ -68,7 +68,7 @@ type Printer interface {
 type Logger struct {
 	isDebug bool
 	writer  io.Writer
-	Printer
+	printer Printer
 }
 
 // New returns an instance of Logger
@@ -79,7 +79,7 @@ func New(w io.Writer) *Logger {
 
 	dp := &defaultPrinter{now: time.Now}
 	dp.setOutput(w)
-	l.Printer = dp
+	l.printer = dp
 
 	return l
 }
@@ -96,23 +96,23 @@ func (l *Logger) SetDebug(isDebug bool) {
 
 // Infof outputs specified arguments as info
 func (l *Logger) Infof(f string, args ...interface{}) {
-	l.Printf(l.writer, LogLevelInfo, f, args...)
+	l.printer.Printf(l.writer, LogLevelInfo, f, args...)
 }
 
 // Debugf outputs specified arguments as debug
 // This function effects only if debug is enabled via SetDebug
 func (l *Logger) Debugf(f string, args ...interface{}) {
 	if l.isDebug {
-		l.Printf(l.writer, LogLevelDebug, f, args...)
+		l.printer.Printf(l.writer, LogLevelDebug, f, args...)
 	}
 }
 
 // Errorf outputs specified arguments as error
 func (l *Logger) Errorf(f string, args ...interface{}) {
-	l.Printf(l.writer, LogLevelError, f, args...)
+	l.printer.Printf(l.writer, LogLevelError, f, args...)
 }
 
 // SetPrinter sets a Printer implementation
 func (l *Logger) SetPrinter(p Printer) {
-	l.Printer = p
+	l.printer = p
 }

@@ -3,6 +3,7 @@ package plog
 import (
 	"io"
 	"os"
+	"time"
 )
 
 var l *Logger
@@ -67,7 +68,7 @@ func New(w io.Writer) *Logger {
 		writer: w,
 	}
 
-	dp := &defaultPrinter{}
+	dp := &defaultPrinter{now: time.Now}
 	dp.setOutput(w)
 	l.Printer = dp
 
@@ -86,20 +87,20 @@ func (l *Logger) SetDebug(isDebug bool) {
 
 // Infof outputs specified arguments as info
 func (l *Logger) Infof(f string, args ...interface{}) {
-	l.Printf(l.writer, LogLevelInfo, "[INFO] "+f, args...)
+	l.Printf(l.writer, LogLevelInfo, f, args...)
 }
 
 // Debugf outputs specified arguments as debug
 // This function effects only if debug is enabled via SetDebug
 func (l *Logger) Debugf(f string, args ...interface{}) {
 	if l.isDebug {
-		l.Printf(l.writer, LogLevelDebug, "[DEBUG] "+f, args...)
+		l.Printf(l.writer, LogLevelDebug, f, args...)
 	}
 }
 
 // Errorf outputs specified arguments as error
 func (l *Logger) Errorf(f string, args ...interface{}) {
-	l.Printf(l.writer, LogLevelError, "[ERROR] "+f, args...)
+	l.Printf(l.writer, LogLevelError, f, args...)
 }
 
 // SetPrinter sets a Printer implementation

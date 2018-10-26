@@ -6,40 +6,40 @@ import (
 	"time"
 )
 
-var l *Logger
+var plog *PLog
 
 func init() {
-	l = New(os.Stdout)
+	plog = New(os.Stdout)
 }
 
-// SetOutput configures destination of global Logger
+// SetOutput configures destination of global PLog
 func SetOutput(w io.Writer) {
-	l.SetOutput(w)
+	plog.SetOutput(w)
 }
 
 // SetDebug enables debug log
 func SetDebug(isDebug bool) {
-	l.isDebug = isDebug
+	plog.isDebug = isDebug
 }
 
-// Infof outputs specified arguments as info log using global Logger
+// Infof outputs specified arguments as info log using global PLog
 func Infof(f string, args ...interface{}) {
-	l.Infof(f, args...)
+	plog.Infof(f, args...)
 }
 
-// Debugf outputs specified arguments as debug log using global Logger
+// Debugf outputs specified arguments as debug log using global PLog
 func Debugf(f string, args ...interface{}) {
-	l.Debugf(f, args...)
+	plog.Debugf(f, args...)
 }
 
-// Errorf outputs specified arguments as error log using global Logger
+// Errorf outputs specified arguments as error log using global PLog
 func Errorf(f string, args ...interface{}) {
-	l.Errorf(f, args...)
+	plog.Errorf(f, args...)
 }
 
 // SetPrinter sets a Printer implementation
 func SetPrinter(p Printer) {
-	l.printer = p
+	plog.printer = p
 }
 
 // LogLevel represents log level
@@ -64,55 +64,55 @@ type Printer interface {
 	Printf(w io.Writer, level LogLevel, f string, args ...interface{})
 }
 
-// Logger is used to control logging with log level functionality
-type Logger struct {
+// PLog is used to control logging with log level functionality
+type PLog struct {
 	isDebug bool
 	writer  io.Writer
 	printer Printer
 }
 
-// New returns an instance of Logger
-func New(w io.Writer) *Logger {
-	l := &Logger{
+// New returns an instance of PLog
+func New(w io.Writer) *PLog {
+	p := &PLog{
 		writer: w,
 	}
 
 	dp := &defaultPrinter{now: time.Now}
 	dp.setOutput(w)
-	l.printer = dp
+	p.printer = dp
 
-	return l
+	return p
 }
 
 // SetOutput configures destination of logging
-func (l *Logger) SetOutput(w io.Writer) {
-	l.writer = w
+func (p *PLog) SetOutput(w io.Writer) {
+	p.writer = w
 }
 
 // SetDebug enables debug log
-func (l *Logger) SetDebug(isDebug bool) {
-	l.isDebug = isDebug
+func (p *PLog) SetDebug(isDebug bool) {
+	p.isDebug = isDebug
 }
 
 // Infof outputs specified arguments as info
-func (l *Logger) Infof(f string, args ...interface{}) {
-	l.printer.Printf(l.writer, LogLevelInfo, f, args...)
+func (p *PLog) Infof(f string, args ...interface{}) {
+	p.printer.Printf(p.writer, LogLevelInfo, f, args...)
 }
 
 // Debugf outputs specified arguments as debug
 // This function effects only if debug is enabled via SetDebug
-func (l *Logger) Debugf(f string, args ...interface{}) {
-	if l.isDebug {
-		l.printer.Printf(l.writer, LogLevelDebug, f, args...)
+func (p *PLog) Debugf(f string, args ...interface{}) {
+	if p.isDebug {
+		p.printer.Printf(p.writer, LogLevelDebug, f, args...)
 	}
 }
 
 // Errorf outputs specified arguments as error
-func (l *Logger) Errorf(f string, args ...interface{}) {
-	l.printer.Printf(l.writer, LogLevelError, f, args...)
+func (p *PLog) Errorf(f string, args ...interface{}) {
+	p.printer.Printf(p.writer, LogLevelError, f, args...)
 }
 
 // SetPrinter sets a Printer implementation
-func (l *Logger) SetPrinter(p Printer) {
-	l.printer = p
+func (p *PLog) SetPrinter(pr Printer) {
+	p.printer = pr
 }

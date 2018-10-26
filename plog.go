@@ -1,18 +1,9 @@
 package plog
 
 import (
-	"fmt"
 	"io"
-	"log"
 	"os"
-	"time"
 )
-
-// Logger is used to control logging with log level functionality
-type Logger struct {
-	log     log.Logger
-	isDebug bool
-}
 
 var l *Logger
 
@@ -45,16 +36,46 @@ func Errorf(f string, args ...interface{}) {
 	l.Errorf(f, args...)
 }
 
+// SetPrinter sets a Printer implementation
+func SetPrinter(p Printer) {
+	l.Printer = p
+}
+
+type LogLevel int
+
+const (
+	LogLevelInfo LogLevel = iota
+	LogLevelDebug
+	LogLevelError
+)
+
+type Printer interface {
+	Printf(w io.Writer, level LogLevel, f string, args ...interface{})
+}
+
+// Logger is used to control logging with log level functionality
+type Logger struct {
+	isDebug bool
+	writer  io.Writer
+	Printer
+}
+
 // New returns an instance of Logger
 func New(w io.Writer) *Logger {
-	l := &Logger{}
-	l.SetOutput(w)
+	l := &Logger{
+		writer: w,
+	}
+
+	dp := &defaultPrinter{}
+	dp.setOutput(w)
+	l.Printer = dp
+
 	return l
 }
 
 // SetOutput configures destination of logging
 func (l *Logger) SetOutput(w io.Writer) {
-	l.log.SetOutput(w)
+	l.writer = w
 }
 
 // SetDebug enables debug log
@@ -64,28 +85,23 @@ func (l *Logger) SetDebug(isDebug bool) {
 
 // Infof outputs specified arguments as info
 func (l *Logger) Infof(f string, args ...interface{}) {
-	l.printf("[INFO] "+f, args...)
+	l.Printf(l.writer, LogLevelInfo, "[INFO] "+f, args...)
 }
 
 // Debugf outputs specified arguments as debug
 // This function effects only if debug is enabled via SetDebug
 func (l *Logger) Debugf(f string, args ...interface{}) {
 	if l.isDebug {
-		l.printf("[DEBUG] "+f, args...)
+		l.Printf(l.writer, LogLevelDebug, "[DEBUG] "+f, args...)
 	}
 }
 
 // Errorf outputs specified arguments as error
 func (l *Logger) Errorf(f string, args ...interface{}) {
-	l.printf("[ERROR] "+f, args...)
+	l.Printf(l.writer, LogLevelError, "[ERROR] "+f, args...)
 }
 
-func (l *Logger) printf(f string, args ...interface{}) {
-	t := time.Now().UTC()
-	y, m, d := t.Date()
-	h, min, sec := t.Clock()
-	loc := t.Location().String()
-	dateFormat := fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d %s",
-		y, m, d, h, min, sec, loc)
-	l.log.Printf(dateFormat+" "+f, args...)
+// SetPrinter sets a Printer implementation
+func (l *Logger) SetPrinter(p Printer) {
+	l.Printer = p
 }

@@ -49,10 +49,12 @@ type LogLevel int
 const (
 	// LogLevelInfo is log level for info
 	LogLevelInfo LogLevel = iota // INFO
+
 	// LogLevelDebug is log level for debug
 	// Only when debug is enabled via SetDebug function,
 	// this level's log will be output
 	LogLevelDebug // DEBUG
+
 	// LogLevelError is log level for error
 	LogLevelError // ERROR
 )

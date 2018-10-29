@@ -3,6 +3,7 @@ package plog
 import (
 	"io"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -69,6 +70,7 @@ type PLog struct {
 	isDebug bool
 	writer  io.Writer
 	printer Printer
+	mu      sync.Mutex
 }
 
 // New returns an instance of PLog
@@ -96,6 +98,8 @@ func (p *PLog) SetDebug(isDebug bool) {
 
 // Infof outputs specified arguments as info
 func (p *PLog) Infof(f string, args ...interface{}) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	p.printer.Printf(p.writer, LogLevelInfo, f, args...)
 }
 
@@ -103,12 +107,16 @@ func (p *PLog) Infof(f string, args ...interface{}) {
 // This function effects only if debug is enabled via SetDebug
 func (p *PLog) Debugf(f string, args ...interface{}) {
 	if p.isDebug {
+		p.mu.Lock()
+		defer p.mu.Unlock()
 		p.printer.Printf(p.writer, LogLevelDebug, f, args...)
 	}
 }
 
 // Errorf outputs specified arguments as error
 func (p *PLog) Errorf(f string, args ...interface{}) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	p.printer.Printf(p.writer, LogLevelError, f, args...)
 }
 
